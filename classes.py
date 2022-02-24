@@ -13,7 +13,9 @@ class COLOR():
 class ctrl():
     c = "\x03"
     x = "\x18"
+    d = "\x04"
     s = "\x13"
+    n = "\x0e"
 
 class Session():
     def __init__(self,token,cache):
@@ -114,5 +116,5 @@ def method(method:str,params:dict={}):
     except:
         print(r.content)
 
-def stdin(message,**kwargs):
-    return prompt(message, kwargs)
+def stdin(message='',**kwargs):
+    return prompt(message, **kwargs)

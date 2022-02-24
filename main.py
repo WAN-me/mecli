@@ -7,15 +7,11 @@ from classes import ctrl, Session
 from classes import stdin, method
 
 
-os.system("")  # enables ansi escape characters in terminal
-
-
-
+os.system("")  # костыль чтоб работали цвета
 
 cache = Db("cache.json")
 
 def Handler():
-    
     key = handler()
     if key in [ctrl.c,ctrl.d]: 
         exit()
@@ -26,9 +22,14 @@ def Handler():
         s = stdin("> ")
         sys.stdout.write(f"\033[F{' '*(len(s)+2)}\n\033[F")
         session.sendmsg(s,cache.data['chat']['id'])
-
-
-
+    elif key == ctrl.n:
+        id = stdin("id пользователя > ")
+        user = session.userget(id)
+        if "error" in user:
+            print(user['error']['text'])
+        else:
+            cache.data['chat'] = user
+            session.printdialog(cache.data['chat']['id'])
 
 def auth():
     params = {
@@ -46,23 +47,16 @@ def reg():
     }
     return method("users.reg",params)
 
-
-
-
-
-
-
-
-session = Session('temp')
+session = Session('temp',cache)
 handler = getch.Getch()
 
 def main():
     if "me" in cache.data:
         global session
-        session = Session(cache.data['me']['token'])
+        session = Session(cache.data['me']['token'],cache)
         print(f"Привет, {cache.data['me']['name']}")
         Thread(target=session.poll).start()
-        print('ctrl+x для выбора чата\nctrl+s для набора сообщения\n')
+        print('ctrl+x для выбора чата\nctrl+s для набора сообщения\nctrl+n для открытия диалога\n')
         while True:
             Handler()
         print('ending handler')
@@ -80,7 +74,7 @@ def main():
             print("Нет")
             res = auth()
             if 'token' in res:
-                session = Session(res['token'])
+                session = Session(res['token'],cache)
                 cache.data['me'] = {}
                 cache.data['me'] = session('users.get')
                 cache.data['me']['token'] = session.token
