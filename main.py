@@ -58,7 +58,13 @@ def main():
         Thread(target=session.poll).start()
         print('ctrl+x для выбора чата\nctrl+s для набора сообщения\nctrl+n для открытия диалога\n')
         while True:
-            Handler()
+            try:
+                Handler()
+            except KeyboardInterrupt:
+                pass
+            except Exception as e:
+                print(e)
+                
         print('ending handler')
 
         
