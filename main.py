@@ -13,8 +13,8 @@ cache = Db("cache.json")
 
 def Handler():
     key = handler()
-    if key in [ctrl.c,ctrl.d]: 
-        exit()
+    if key in [ctrl.d]: 
+        os._exit(1)
     elif key == ctrl.x:
         cache.data['chat'] = session.choseChat()
         session.printdialog(cache.data['chat']['id'])

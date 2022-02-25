@@ -29,6 +29,7 @@ class Session():
         except:
             ...
         self.poolth = Thread(target=self.poll)
+        self.poolth.daemon = True
         self.poolth.start()
     def stoppool(self):
         self.poolth.join()
