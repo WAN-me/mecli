@@ -2,7 +2,8 @@ from threading import Thread
 import getch
 from jsondb import Db
 import sys,os
-
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.history import FileHistory
 from classes import ctrl, Session
 from classes import stdin, method
 
@@ -19,7 +20,7 @@ def Handler():
         cache.data['chat'] = session.choseChat()
         session.printdialog(cache.data['chat']['id'])
     elif key == ctrl.s:
-        s = stdin("> ")
+        s = stdin("> ",auto_suggest=AutoSuggestFromHistory(),history=FileHistory('.history.txt'))
         sys.stdout.write(f"\033[F{' '*(len(s)+2)}\n\033[F")
         session.sendmsg(s,cache.data['chat']['id'])
     elif key == ctrl.n:
@@ -56,7 +57,7 @@ def main():
         session = Session(cache.data['me']['token'],cache)
         print(f"Привет, {cache.data['me']['name']}")
         session.startpool()
-        print('ctrl+x для выбора чата\nctrl+s для набора сообщения\nctrl+n для открытия диалога\n')
+        print('ctrl+x для выбора чата\nctrl+s для набора сообщения\nctrl+n для открытия диалога\nctrl+d для выхода\n')
         while True:
             try:
                 Handler()
