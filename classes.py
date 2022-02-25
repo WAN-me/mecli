@@ -2,6 +2,7 @@
 import requests
 import time
 from prompt_toolkit import prompt
+from threading import Thread
 
 class COLOR():
     HEADER="\033[95m"
@@ -21,6 +22,16 @@ class Session():
     def __init__(self,token,cache):
         self.token = token
         self.cache = cache
+
+    def startpool(self):
+        try:
+            self.stoppool()
+        except:
+            ...
+        self.poolth = Thread(target=self.poll)
+        self.poolth.start()
+    def stoppool(self):
+        self.poolth.join()
 
     def sendmsg(self,text:str,to):
         if not text.strip() == "":
