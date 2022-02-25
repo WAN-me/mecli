@@ -14,7 +14,7 @@ cache = Db("cache.json")
 
 def Handler():
     key = handler()
-    if key in [ctrl.d]: 
+    if key in [ctrl.d,ctrl.c]: 
         os._exit(1)
     elif key == ctrl.x:
         cache.data['chat'] = session.choseChat()
@@ -55,9 +55,9 @@ def main():
     if "me" in cache.data:
         global session
         session = Session(cache.data['me']['token'],cache)
-        print(f"Привет, {cache.data['me']['name']}")
+        print(f"Привет, {cache.data['me']['name']} (id{cache.data['me']['id']})")
         session.startpool()
-        print('ctrl+x для выбора чата\nctrl+s для набора сообщения\nctrl+n для открытия диалога\nctrl+d для выхода\n')
+        print('ctrl+x для выбора чата\nctrl+s для набора сообщения\nctrl+n для открытия диалога\nctrl+d или ctrl+c для выхода\n')
         while True:
             try:
                 Handler()
