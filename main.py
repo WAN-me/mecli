@@ -32,10 +32,10 @@ def Handler():
             cache.data['chat'] = user
             session.printdialog(cache.data['chat']['id'])
 
-def auth():
+def auth(ligin = "", passwd = ""):
     params = {
-    "login": stdin("Введите почту> "),
-    "password": stdin("Введите пароль> ",is_password=True)
+    "login": stdin("Введите почту> ", default=ligin),
+    "password": stdin("Введите пароль> ",is_password=True, default=passwd)
     }
     return method("users.auth",params)
 
@@ -46,7 +46,7 @@ def reg():
         "email": stdin("Введите почту> "),
         "password": stdin("Введите пароль> ",is_password=True)
     }
-    return method("users.reg",params)
+    return (method("users.reg",params),params)
 
 session = Session('temp',cache)
 handler = getch.Getch()
@@ -91,7 +91,15 @@ def main():
             main()
         elif key in yes:
             print("Да")
-            print(reg())
+            ss = reg()
+            cache.data['me'] = ss[0]
+            res = auth(ss[1]['email'],ss[1]['password'])
+            if 'token' in res:
+                session = Session(res['token'],cache)
+                cache.data['me'] = {}
+                cache.data['me'] = session('users.get')
+                cache.data['me']['token'] = session.token
+                cache.save()
         else:
             print("Выход")
             exit()
