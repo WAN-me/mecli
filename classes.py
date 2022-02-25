@@ -84,9 +84,9 @@ class Session():
         username = self.userget(message['from_id'])['name']
         text = message['text']
         if message['from_id'] == self.cache.data['me']['id']:
-            print(f"{COLOR.BLUE}{text}{COLOR.ENDC}")
+            print(f"{COLOR.BLUE}{text}{COLOR.ENDC}\n\033[F")
         else: 
-            print(f"{COLOR.GREEN}{username}{COLOR.ENDC}: {text}")
+            print(f"{COLOR.GREEN}{username}{COLOR.ENDC}: {text}\n\033[F")
 
     def printdialog(self,chatid):
         messages = (self.gethistory(chatid))['items']
@@ -119,13 +119,18 @@ class Lp:
 def log(text):
     open("a.log", "a").write(f"\n{text}")
 
+
 def method(method:str,params:dict={}):
-    log(f"----> {method} {params}")
     r = requests.post("http://api.wan-group.ru/method/"+method,data=params)
-    log(f"<---- {r.text}")
     try:
+        if "error" in r.json():
+            log(f"----> {method} {params}")
+            log(f"<---- {r.text}")
         return r.json()
     except:
+        if "error" in r.content:
+            log(f"----> {method} {params}")
+            log(f"<---- {r.text}")
         print(r.content)
 
 def stdin(message='',**kwargs):
