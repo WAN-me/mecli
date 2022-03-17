@@ -37,7 +37,7 @@ def auth(ligin = "", passwd = ""):
     "login": stdin("Введите почту> ", default=ligin),
     "password": stdin("Введите пароль> ",is_password=True, default=passwd)
     }
-    return method("users.auth",params)
+    return method("account.auth",params)
 
 
 def reg():
@@ -46,7 +46,7 @@ def reg():
         "email": stdin("Введите почту> "),
         "password": stdin("Введите пароль> ",is_password=True)
     }
-    return (method("users.reg",params),params)
+    return (method("account.reg",params),params)
 
 session = Session('temp',cache)
 handler = getch.Getch()

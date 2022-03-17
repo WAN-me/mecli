@@ -1,14 +1,14 @@
 import os
-import sys, tty, termios
+import sys
 try:
     import sys, tty, termios
 except ImportError:
     import msvcrt
 class Getch:
     def __init__(self):
-        try:
+        if os.name == "posix":
             self.impl = _GetchUnix()
-        except ImportError:
+        else:
             self.impl = _GetchWindows()
 
     def __call__(self): 
