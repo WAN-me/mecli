@@ -34,7 +34,7 @@ def Handler():
 
 def auth(ligin = "", passwd = ""):
     params = {
-    "login": stdin("Введите почту> ", default=ligin),
+    "email": stdin("Введите почту> ", default=ligin),
     "password": stdin("Введите пароль> ",is_password=True, default=passwd)
     }
     return method("account.auth",params)
@@ -86,9 +86,10 @@ def main():
                 cache.data['me'] = session('users.get')
                 cache.data['me']['token'] = session.token
                 cache.save()
-
-            print("Авторизованно!")
-            main()
+                print("Авторизованно!")
+                main()
+            else: 
+                print(res)
         elif key in yes:
             print("Да")
             ss = reg()

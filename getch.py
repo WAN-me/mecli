@@ -34,7 +34,7 @@ class _GetchWindows:
     def __init__(self):
         import msvcrt
     def __call__(self):
-        return msvcrt.getch()
+        return msvcrt.getch().decode('cp866')
 
 if __name__ == "__main__":
     handler = Getch()
