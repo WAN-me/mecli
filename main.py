@@ -6,7 +6,9 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.history import FileHistory
 from classes import ctrl, Session
 from classes import stdin, method
-
+if os.name != 'posix':
+    import colorama
+    colorama.init()
 
 os.system("")  # костыль чтоб работали цвета
 
