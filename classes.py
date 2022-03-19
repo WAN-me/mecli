@@ -7,8 +7,10 @@ from threading import Thread
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.history import FileHistory
 import prompt_toolkit
+import playsound
 
-
+def notif():
+    Thread(target=playsound.playsound,args=('not.mp3', True)).start()
 class COLOR():
     HEADER="\033[95m"
     BLUE="\033[96m"
@@ -115,6 +117,7 @@ class Session():
         type = upd["type"]
         if type == 1:
             self.printmsg(upd['object'])
+            notif()
         elif type == 2:
             self.printmsg(upd['object'])
         else:
