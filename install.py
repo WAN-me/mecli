@@ -1,5 +1,5 @@
 import os
-os.system("pip3 install prompt_toolkit requests playsound")
+os.system("pip3 install prompt_toolkit requests playsound==1.2.2")
 if os.name != "posix":
     os.system("pip3 install colorama")
 import requests
