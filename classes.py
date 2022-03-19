@@ -1,8 +1,13 @@
 
+import sys
 import requests
 import time
 from prompt_toolkit import prompt
 from threading import Thread
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.history import FileHistory
+import prompt_toolkit
+
 
 class COLOR():
     HEADER="\033[95m"
@@ -22,12 +27,15 @@ class Session():
     def __init__(self,token,cache):
         self.token = token
         self.cache = cache
+        self.write_msg = False
+        self.ps = prompt_toolkit.PromptSession("> ",auto_suggest=AutoSuggestFromHistory(),history=FileHistory('.history.txt'))
 
     def startpool(self):
         try:
             self.stoppool()
         except:
             ...
+
         self.poolth = Thread(target=self.poll)
         self.poolth.daemon = True
         self.poolth.start()
@@ -83,10 +91,18 @@ class Session():
     def printmsg(self,message):
         username = self.userget(message['from_id'])['name']
         text = message['text']
-        if message['from_id'] == self.cache.data['me']['id']:
-            print(f"{COLOR.BLUE}{text}{COLOR.ENDC}\n\033[F")
-        else: 
-            print(f"{COLOR.GREEN}{username}{COLOR.ENDC}: {text}\n\033[F")
+        if self.write_msg:
+            sys.stdout.write(f"\r{' '*(len(self.ps.default_buffer.text)+2)}\r") # Переставить коретку на строку выше, очистить строку
+            if message['from_id'] == self.cache.data['me']['id']:
+                print(f"{COLOR.BLUE}{text}{COLOR.ENDC}")
+            else: 
+                print(f"{COLOR.GREEN}{username}{COLOR.ENDC}: {text}")
+            sys.stdout.write("\r> "+self.ps.default_buffer.text)
+        else:
+            if message['from_id'] == self.cache.data['me']['id']:
+                print(f"{COLOR.BLUE}{text}{COLOR.ENDC}\n\033[F")
+            else: 
+                print(f"{COLOR.GREEN}{username}{COLOR.ENDC}: {text}\n\033[F")
 
     def printdialog(self,chatid):
         messages = (self.gethistory(chatid))['items']

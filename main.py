@@ -1,9 +1,6 @@
-from threading import Thread
 import getch
 from jsondb import Db
 import sys,os
-from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-from prompt_toolkit.history import FileHistory
 from classes import ctrl, Session
 from classes import stdin, method
 if os.name != 'posix':
@@ -22,8 +19,10 @@ def Handler():
         cache.data['chat'] = session.choseChat()
         session.printdialog(cache.data['chat']['id'])
     elif key == ctrl.s:
-        s = stdin("> ",auto_suggest=AutoSuggestFromHistory(),history=FileHistory('.history.txt'))
+        session.write_msg = True
+        s = session.ps.prompt()
         sys.stdout.write(f"\033[F{' '*(len(s)+2)}\n\033[F")
+        session.write_msg = False
         session.sendmsg(s,cache.data['chat']['id'])
     elif key == ctrl.n:
         id = stdin("id пользователя > ")
