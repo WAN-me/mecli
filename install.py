@@ -12,6 +12,8 @@ def download_file(url,filename = None):
     local_filename = filename or url.split('/')[-1]
     with requests.get(url, stream=True) as r:
         lenght = int(r.headers.get('Content-Length',1024))
+        if lenght == 1024:
+            lenght = len(r.content)
         print(f'need to get {lenght} bytes of data')
         with alive_bar(lenght,spinner_length=5,title="download main.zip") as bar:
             with open(local_filename, 'wb') as f:
