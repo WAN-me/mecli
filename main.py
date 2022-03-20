@@ -1,3 +1,4 @@
+from threading import Thread
 import getch
 from jsondb import Db
 import sys,os
@@ -23,7 +24,7 @@ def Handler():
         s = session.ps.prompt()
         sys.stdout.write(f"\033[F{' '*(len(s)+2)}\n\033[F")
         session.write_msg = False
-        session.sendmsg(s,cache.data['chat']['id'])
+        Thread(target=session.sendmsg,args=(s,cache.data['chat']['id']))
     elif key == ctrl.n:
         id = stdin("id пользователя > ")
         user = session.userget(id)
