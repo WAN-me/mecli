@@ -92,7 +92,7 @@ class Session():
 
     def printmsg(self,message):
         username = self.userget(message['from_id'])['name']
-        text = message['text']
+        text = str(message['text']).replace('\n','\n\r')
         if self.write_msg:
             sys.stdout.write(f"\r{' '*(len(self.ps.default_buffer.text)+2)}\r") # Переставить коретку на строку выше, очистить строку
             if message['from_id'] == self.cache.data['me']['id']:
