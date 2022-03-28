@@ -46,7 +46,8 @@ def reg():
     params={
         "name": stdin("Введите имя пользователя> "),
         "email": stdin("Введите почту> "),
-        "password": stdin("Введите пароль> ",is_password=True)
+        "password": stdin("Введите пароль> ",is_password=True),
+        'invitation': stdin("Введите пришлашение> ")
     }
     return (method("account.reg",params),params)
 
@@ -95,14 +96,23 @@ def main():
         elif key in yes:
             print("Да")
             ss = reg()
+            if 'error' in ss[0]:
+                print(ss[0]['error'])
+                return
             cache.data['me'] = ss[0]
             res = auth(ss[1]['email'],ss[1]['password'])
+            
             if 'token' in res:
                 session = Session(res['token'],cache)
+                print(ss[0].get('advanced'))
+                if ss[0].get('advanced') == 'Please check you mailbox':
+                    session('account.verif', {"code": stdin('Введите код из электронного письма> ')})
                 cache.data['me'] = {}
                 cache.data['me'] = session('users.get')
                 cache.data['me']['token'] = session.token
                 cache.save()
+            
+            main()
         else:
             print("Выход")
             exit()
