@@ -32,17 +32,17 @@ class Session():
         self.write_msg = False
         self.ps = prompt_toolkit.PromptSession("> ",auto_suggest=AutoSuggestFromHistory(),history=FileHistory('.history.txt'))
 
-    def startpool(self):
+    def startpoll(self):
         try:
-            self.stoppool()
+            self.stoppoll()
         except:
             ...
 
-        self.poolth = Thread(target=self.poll)
-        self.poolth.daemon = True
-        self.poolth.start()
-    def stoppool(self):
-        self.poolth.join()
+        self.pollth = Thread(target=self.poll)
+        self.pollth.daemon = True
+        self.pollth.start()
+    def stoppoll(self):
+        self.pollth.join()
 
     def sendmsg(self,text:str,to):
         if not text.strip() == "":
@@ -128,11 +128,11 @@ class Lp:
         self.sess = session
     def start(self):
         while True:
-            s = self.sess("Pool.get")
+            s = self.sess("poll.get")
             if s['count']>0:
                 for up in s["items"]:
                     yield up
-                self.sess("Pool.read")
+                self.sess("poll.read")
             time.sleep(2)
 
 def log(text):
@@ -140,7 +140,7 @@ def log(text):
 
 
 def method(method:str,params:dict={}):
-    r = requests.post("http://api.wan-group.ru/method/"+method,data=params)
+    r = requests.post("http://wan-group.ru:3000/method/"+method,data=params)
     try:
         if "error" in r.json():
             log(f"----> {method} {params}")

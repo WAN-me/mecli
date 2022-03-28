@@ -58,7 +58,7 @@ def main():
         global session
         session = Session(cache.data['me']['token'],cache)
         print(f"Привет, {cache.data['me']['name']} (id{cache.data['me']['id']})")
-        session.startpool()
+        session.startpoll()
         print('ctrl+x для выбора чата\nctrl+s для набора сообщения\nctrl+n для открытия диалога\nctrl+d или ctrl+c для выхода\n')
         while True:
             try:
