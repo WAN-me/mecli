@@ -17,22 +17,34 @@ def Handler():
     if key in [ctrl.d,ctrl.c]: 
         os._exit(1)
     elif key == ctrl.x:
-        cache.data['chat'] = session.choseChat()
-        session.printdialog(cache.data['chat']['id'])
+        cache.data['chat'] = session.chose_chat()
+        session.print_dialog(cache.data['chat']['id'])
+    elif key == ctrl.z:
+        session.create_chat()
     elif key == ctrl.s:
         session.write_msg = True
         s = session.ps.prompt()
         sys.stdout.write(f"\033[F{' '*(len(s)+2)}\n\033[F")
         session.write_msg = False
-        Thread(target=session.sendmsg,args=(s,cache.data['chat']['id'])).start()
+        if 'owner_id' in cache.data['chat']:
+            Thread(target=session.sendmsg,args=(s,-cache.data['chat']['id'])).start()
+        else:
+            Thread(target=session.sendmsg,args=(s,cache.data['chat']['id'])).start()
+
     elif key == ctrl.n:
         id = stdin("id пользователя > ")
-        user = session.userget(id)
-        if "error" in user:
-            print(user['error']['text'])
+        if id.startswith('-'):
+            obj = session.groupget(id[1:])
         else:
-            cache.data['chat'] = user
-            session.printdialog(cache.data['chat']['id'])
+            obj = session.userget(id)
+        if "error" in obj:
+            print(obj['error']['text'])
+        else:
+            cache.data['chat'] = obj
+            if 'owner_id' in obj:
+                session.print_dialog(-cache.data['chat']['id'])
+            else:
+                session.print_dialog(cache.data['chat']['id'])
 
 def auth(ligin = "", passwd = ""):
     params = {
@@ -59,7 +71,7 @@ def main():
         global session
         session = Session(cache.data['me']['token'],cache)
         print(f"Привет, {cache.data['me']['name']} (id{cache.data['me']['id']})")
-        session.startpoll()
+        session.start_poll()
         print('ctrl+x для выбора чата\nctrl+s для набора сообщения\nctrl+n для открытия диалога\nctrl+d или ctrl+c для выхода\n')
         while True:
             try:

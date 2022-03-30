@@ -24,6 +24,7 @@ class ctrl():
     d = "\x04"
     s = "\x13"
     n = "\x0e"
+    z = "\x1a"
 
 class Session():
     def __init__(self,token,cache):
@@ -32,17 +33,20 @@ class Session():
         self.write_msg = False
         self.ps = prompt_toolkit.PromptSession("> ",auto_suggest=AutoSuggestFromHistory(),history=FileHistory('.history.txt'))
 
-    def startpoll(self):
+    def start_poll(self):
         try:
             self.stoppoll()
         except:
             ...
-
         self.pollth = Thread(target=self.poll)
         self.pollth.daemon = True
         self.pollth.start()
-    def stoppoll(self):
+
+    def stop_poll(self):
         self.pollth.join()
+    
+    def newgroup(self, name, type):
+        return self('groups.new', {'name': name, 'type': type})
 
     def sendmsg(self,text:str,to):
         if not text.strip() == "":
@@ -61,6 +65,17 @@ class Session():
             self.cache.data['users'][str(id)] = user
             self.cache.save()
             return self.cache.data['users'][str(id)]
+    
+    def groupget(self,id):
+        if "groups" in self.cache.data and str(id) in self.cache.data['groups']:
+            return self.cache.data['groups'][str(id)]
+        else:
+            group = self.__call__('groups.get',{"id":id})
+            if not "groups" in self.cache.data:
+                self.cache.data['groups'] = {}
+            self.cache.data['groups'][str(id)] = group
+            self.cache.save()
+            return self.cache.data['groups'][str(id)]
 
     def __call__(self,methodname:str,params:dict={}):
         params['accesstoken'] = self.token
@@ -72,7 +87,8 @@ class Session():
         for event in lp.start():
             self.printupdate(event)
 
-    def choseChat(self):
+    def chose_chat(self):
+        "Показывает существующие чаты и предлагает выбрать"
         chats = self('messages.chats')
         print(f"Чатов - {chats['count']}")
         for rawchat in range(len(chats['items'])):
@@ -106,11 +122,17 @@ class Session():
             else: 
                 print(f"{COLOR.GREEN}{username}{COLOR.ENDC}: {text}\n\033[F")
 
-    def printdialog(self,chatid):
+    def print_dialog(self,chatid):
+        "Запускает обработчик новых событий из чата"
         messages = (self.gethistory(chatid))['items']
         messages.reverse()
         for message in messages:
             self.printmsg(message)
+
+    def create_chat(self):
+        "Запускает диалог создания группового чата"
+        group = self.newgroup(input('Имя нового чата> '), 1)
+        print(group)
 
     
     def printupdate(self,upd):
