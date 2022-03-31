@@ -21,6 +21,14 @@ def Handler():
         session.print_dialog(cache.data['chat']['id'])
     elif key == ctrl.z:
         session.create_chat()
+    elif key == ctrl.h:
+        print(help)
+    elif key == ctrl.j:
+        id = session.join_chat()
+        obj = session.groupget(id)
+        cache.data['chat'] = obj
+        session.print_dialog(-cache.data['chat']['id'])
+
     elif key == ctrl.s:
         session.write_msg = True
         s = session.ps.prompt()
@@ -66,13 +74,22 @@ def reg():
 session = Session('temp',cache)
 handler = getch.Getch()
 
+help = '''ctrl+x для выбора чата
+ctrl+s для набора сообщения
+ctrl+n для открытия диалога
+ctrl+z для создания чата
+ctrl+j для вступления в группу
+ctrl+h для вывода справки
+ctrl+d или ctrl+c для выхода'''
+
 def main():
     if "me" in cache.data:
         global session
         session = Session(cache.data['me']['token'],cache)
         print(f"Привет, {cache.data['me']['name']} (id{cache.data['me']['id']})")
+        print(help)
         session.start_poll()
-        print('ctrl+x для выбора чата\nctrl+s для набора сообщения\nctrl+n для открытия диалога\nctrl+d или ctrl+c для выхода\n')
+        
         while True:
             try:
                 Handler()

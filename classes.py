@@ -1,5 +1,6 @@
 
 import sys
+from typing import overload
 import requests
 import time
 from prompt_toolkit import prompt
@@ -25,6 +26,8 @@ class ctrl():
     s = "\x13"
     n = "\x0e"
     z = "\x1a"
+    h = "\x08"
+    j = "\n"
 
 class Session():
     def __init__(self,token,cache):
@@ -122,6 +125,14 @@ class Session():
             else: 
                 print(f"{COLOR.GREEN}{username}{COLOR.ENDC}: {text}\n\033[F")
 
+    def join_chat(self):
+        id = input('id чата> ')
+        group = self('groups.join', {'id': id})
+        if 'error' in group:
+            print(group['error']['text'])
+        else:
+            print('ok')
+            return id
     def print_dialog(self,chatid):
         "Запускает обработчик новых событий из чата"
         messages = (self.gethistory(chatid))['items']
@@ -134,7 +145,6 @@ class Session():
         group = self.newgroup(input('Имя нового чата> '), 1)
         print(group)
 
-    
     def printupdate(self,upd):
         type = upd["type"]
         if type == 1:
