@@ -159,12 +159,16 @@ class Lp:
     def __init__(self, session):
         self.sess = session
     def start(self):
+        id = None
         while True:
-            s = self.sess("poll.get")
-            if s['count']>0:
-                for up in s["items"]:
-                    yield up
-                self.sess("poll.read")
+            try:
+                s = self.sess("poll.get")
+                if s['count']>0:
+                    for up in s["items"]:
+                        yield up
+                    self.sess("poll.read")
+            except requests.exceptions.ConnectionError:
+                sys.stdout.write('net_error\n\r')
             time.sleep(2)
 
 def log(text):
@@ -173,6 +177,12 @@ def log(text):
 
 def method(method:str,params:dict={}):
     r = requests.post("http://wan-group.ru:3000/method/"+method,data=params)
+    if 'password' in params:
+        params['password'] = "PASSWORD"
+    
+    if 'accesstoken' in params:
+        params['accesstoken'] = "TOKEN"
+        
     try:
         if "error" in r.json():
             log(f"----> {method} {params}")
