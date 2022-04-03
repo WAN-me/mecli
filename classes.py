@@ -182,7 +182,7 @@ def log(text):
 
 
 def method(method:str,params:dict={}):
-    r = requests.post("http://test.api.wan-group.ru/method/"+method,data=params)
+    r = requests.post("http://api.wan-group.ru/method/"+method,data=params)
     if 'password' in params:
         params['password'] = "PASSWORD"
     
