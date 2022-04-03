@@ -67,7 +67,7 @@ def reg():
         "name": stdin("Введите имя пользователя> "),
         "email": stdin("Введите почту> "),
         "password": stdin("Введите пароль> ",is_password=True),
-        'invitation': stdin("Введите пришлашение> ")
+        'invitation': stdin("Введите приглашение> ")
     }
     return (method("account.reg",params),params)
 

@@ -10,6 +10,9 @@ from prompt_toolkit.history import FileHistory
 import prompt_toolkit
 import playsound
 
+def print(obj):
+    sys.stdout.write(str(obj)+'\n\r')
+
 def notif():
     Thread(target=playsound.playsound,args=('not.mp3', True)).start()
 class COLOR():
@@ -159,16 +162,19 @@ class Lp:
     def __init__(self, session):
         self.sess = session
     def start(self):
-        id = None
+        self.id = None
         while True:
             try:
-                s = self.sess("poll.get")
-                if s['count']>0:
-                    for up in s["items"]:
-                        yield up
-                    self.sess("poll.read")
+                s = self.sess("poll.get", {'id': self.id})
+                if 'id' in s:
+                    self.id = s['id']
+                else:
+                    if s['count']>0:
+                        for up in s["items"]:
+                            yield up
+                            self.id = up['event_id']
             except requests.exceptions.ConnectionError:
-                sys.stdout.write('net_error\n\r')
+                print("net_error")
             time.sleep(2)
 
 def log(text):
@@ -176,7 +182,7 @@ def log(text):
 
 
 def method(method:str,params:dict={}):
-    r = requests.post("http://wan-group.ru:3000/method/"+method,data=params)
+    r = requests.post("http://test.api.wan-group.ru/method/"+method,data=params)
     if 'password' in params:
         params['password'] = "PASSWORD"
     
