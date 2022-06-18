@@ -1,14 +1,21 @@
 #!/usr/bin/python3
+import sys,os
+import sbeaver
+from pathlib import Path
+from classes import ctrl, Session
+from jsondb import Db
+from classes import stdin, method
 from threading import Thread
 import getch
-from jsondb import Db
-import sys,os
-from classes import ctrl, Session
-from classes import stdin, method
+import contextlib
+
 if os.name != 'posix':
     import colorama
     colorama.init()
-from pathlib import Path
+
+global session
+
+server = sbeaver.Server(address='localhost', port=7239, sync=False, silence=True)
 
 os.system("")  # костыль чтоб работали цвета
 
@@ -85,6 +92,7 @@ ctrl+j для вступления в группу
 ctrl+h для вывода справки
 ctrl+d или ctrl+c для выхода'''
 
+
 def main():
     if "me" in cache.data:
         global session
@@ -149,5 +157,22 @@ def main():
         else:
             print("Выход")
             exit()
-if __name__ == "__main__":
-    main()
+
+
+@server.sbind('/addmsg')
+def addmsg(req):
+    print(req.data['text'])
+    if session.write_msg:
+        sys.stdout.write(f"\r{' '*(len(session.ps.default_buffer.text)+2)}\r") # Переставить коретку на строку выше, очистить строку
+        print(req.data['text'])
+        sys.stdout.write("\r> "+session.ps.default_buffer.text)
+    else:
+        print(req.data['text'])
+        
+    return 200, ''
+th = Thread(target=server.start, daemon=True)
+with open('help.txt', 'w') as f:
+    with contextlib.redirect_stdout(f):
+        th.start()
+
+main.main()
