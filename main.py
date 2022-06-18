@@ -53,6 +53,15 @@ def Handler():
                 session.print_dialog(-cache.data['chat']['id'])
             else:
                 session.print_dialog(cache.data['chat']['id'])
+    elif key == ctrl.m:
+        if not 'tts' in cache.data:
+            cache.data['tts'] = {}
+            cache.data['tts']['enabled'] = False
+        cache.data['tts']['enabled'] = not cache.data['tts']['enabled']
+        tstatus = "ВКЛ" if cache.data['tts']['enabled'] else "Выкл"
+        cache.data['tts']['voice'] = "Дмитрий"
+        print(f"Озвучка новых сообщений: {tstatus}")
+        cache.save()
 
 def auth(ligin = "", passwd = ""):
     params = {
@@ -77,6 +86,7 @@ handler = getch.Getch()
 help = '''ctrl+x для выбора чата
 ctrl+s для набора сообщения
 ctrl+n для открытия диалога
+ctrl+m для включения или выключения озвучки новых сообщений
 ctrl+z для создания чата
 ctrl+j для вступления в группу
 ctrl+h для вывода справки

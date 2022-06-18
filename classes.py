@@ -1,4 +1,7 @@
 
+import subprocess
+import os
+import os.path
 import sys
 from typing import overload
 import requests
@@ -13,6 +16,18 @@ import playsound
 def print(obj):
     sys.stdout.write(str(obj)+'\n\r')
 
+def _play_mss(text, voice):
+    filename = str(time.time())+".mp3"
+    process = subprocess.Popen(
+        ["msspeech", voice, text, "--filename", filename],
+        stderr=subprocess.PIPE, stdout=subprocess.PIPE
+    )
+    process.communicate()
+    if os.path.isfile(filename):
+        playsound.playsound(filename)
+        os.remove(filename)
+def play_mss(text, voice):
+    Thread(target=_play_mss,args=(text, voice)).start()
 def notif():
     Thread(target=playsound.playsound,args=('not.mp3', True)).start()
 class COLOR():
@@ -28,6 +43,7 @@ class ctrl():
     d = "\x04"
     s = "\x13"
     n = "\x0e"
+    m = "\r"
     z = "\x1a"
     h = "\x08"
     j = "\n"
@@ -121,12 +137,17 @@ class Session():
                 print(f"{COLOR.BLUE}{text}{COLOR.ENDC}")
             else: 
                 print(f"{COLOR.GREEN}{username}{COLOR.ENDC}: {text}")
+                if self.cache.data['tts']['enabled']:
+                    play_mss(text=f"{username}: {text}", voice=self.cache.data['tts']['voice'])
             sys.stdout.write("\r> "+self.ps.default_buffer.text)
         else:
             if message['from_id'] == self.cache.data['me']['id']:
                 print(f"{COLOR.BLUE}{text}{COLOR.ENDC}\n\033[F")
             else: 
                 print(f"{COLOR.GREEN}{username}{COLOR.ENDC}: {text}\n\033[F")
+                if self.cache.data['tts']['enabled']:
+                    play_mss(text=f"{username}: {text}", voice=self.cache.data['tts']['voice'])
+
 
     def join_chat(self):
         id = input('id чата> ')
