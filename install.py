@@ -8,6 +8,7 @@ if plt == "Windows":
     pip.main("install colorama win10toast".split())
 if plt == "Linux":
     os.system("mkdir -p ~/.config/systemd/user/")
+    os.system("mkdir -p ~/.cache/mecli/")
     os.system('mkdir -p ~/.local/lib/meclid')
     os.system("touch ~/.config/systemd/user/meclid.service")
     os.system(f'cp *.py {Path.home()}/.local/lib/meclid/')
