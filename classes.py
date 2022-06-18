@@ -9,6 +9,7 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.history import FileHistory
 import prompt_toolkit
 import playsound
+import os
 
 def print(obj):
     sys.stdout.write(str(obj)+'\n\r')
@@ -37,7 +38,7 @@ class Session():
         self.token = token
         self.cache = cache
         self.write_msg = False
-        self.ps = prompt_toolkit.PromptSession("> ",auto_suggest=AutoSuggestFromHistory(),history=FileHistory('.history.txt'))
+        self.ps = prompt_toolkit.PromptSession("> ")
 
     def start_poll(self):
         try:
