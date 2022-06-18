@@ -48,7 +48,7 @@ def main():
             if type == 1:
                 username = session.userget(event['object']['from_id'])['name']
                 text = str(event['object']['text']).replace('\n','\n\r')
-                if not check:
+                if not check():
                     push(f'Новое сообщение[{username}]', text)
                 else:
                     if event['object']['from_id'] == session.cache.data['me']['id']:
@@ -57,7 +57,7 @@ def main():
                         send_api(f"{COLOR.GREEN}{username}{COLOR.ENDC}: {text}\n\033[F")
                         say(text)
             elif type == 2:
-                if check:
+                if check():
                     text = str(event['object']['text']).replace('\n','\n\r')
                     send_api(f'{COLOR.BLUE}{text}{COLOR.ENDC}')
             else:
