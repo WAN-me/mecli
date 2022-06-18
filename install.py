@@ -1,7 +1,31 @@
 import os
-os.system("pip3 install prompt_toolkit requests playsound==1.2.2 alive_progress")
-if os.name != "posix":
-    os.system("pip3 install colorama")
+import platform
+import pip
+from pathlib import Path
+plt = platform.system()
+pip.main("install prompt_toolkit sbeaver requests playsound==1.2.2 alive_progress".split())
+if plt == "Windows":
+    pip.main("install colorama win10toast".split())
+if plt == "Linux":
+    os.system("mkdir -p ~/.config/systemd/user/")
+    os.system('mkdir -p ~/.local/lib/meclid')
+    os.system("touch ~/.config/systemd/user/meclid.service")
+    os.system(f'cp *.py {Path.home()}/.local/lib/meclid/')
+    with open(f'{Path.home()}/.config/systemd/user/meclid.service', 'w') as f:
+        f.write(f"""[Unit]
+Description=meclid - daemon for wanilla cli messenger
+
+[Service]
+ExecStart={Path.home()}/.local/lib/meclid/daemon.py
+Restart=always
+WorkingDirectory={Path.home()}/.local/lib/meclid
+
+[Install]
+WantedBy=default.target
+        """)
+    os.system('systemctl --user daemon-reload')
+    os.system('systemctl --user enable --now meclid.service')
+    os.system('systemctl --user restart meclid.service')
 import requests
 import shutil
 import zipfile

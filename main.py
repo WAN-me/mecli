@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from threading import Thread
 import getch
 from jsondb import Db
@@ -7,10 +8,11 @@ from classes import stdin, method
 if os.name != 'posix':
     import colorama
     colorama.init()
+from pathlib import Path
 
 os.system("")  # костыль чтоб работали цвета
 
-cache = Db("cache.json")
+cache = Db(f"{Path.home()}/.cache/mecli/cache.json")
 
 def Handler():
     key = handler()
@@ -59,6 +61,7 @@ def auth(ligin = "", passwd = ""):
     "email": stdin("Введите почту> ", default=ligin),
     "password": stdin("Введите пароль> ",is_password=True, default=passwd)
     }
+    
     return method("account.auth",params)
 
 
@@ -88,7 +91,7 @@ def main():
         session = Session(cache.data['me']['token'],cache)
         print(f"Привет, {cache.data['me']['name']} (id{cache.data['me']['id']})")
         print(help)
-        session.start_poll()
+        #session.start_poll()
         
         while True:
             try:
@@ -119,6 +122,7 @@ def main():
                 cache.data['me']['token'] = session.token
                 cache.save()
                 print("Авторизованно!")
+                os.system("systemctl restart --user meclid")
                 main()
             else: 
                 print(res)
@@ -145,5 +149,5 @@ def main():
         else:
             print("Выход")
             exit()
-
-main()
+if __name__ == "__main__":
+    main()
