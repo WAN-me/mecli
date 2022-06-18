@@ -171,8 +171,8 @@ def addmsg(req):
         
     return 200, ''
 th = Thread(target=server.start, daemon=True)
-with open('help.txt', 'w') as f:
+with open('/dev/null', 'w') as f:
     with contextlib.redirect_stdout(f):
         th.start()
 
-main.main()
+main()
