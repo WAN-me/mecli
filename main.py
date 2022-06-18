@@ -53,7 +53,7 @@ def Handler():
                 session.print_dialog(-cache.data['chat']['id'])
             else:
                 session.print_dialog(cache.data['chat']['id'])
-    elif key == ctrl.m:
+    elif key == ctrl.k:
         if not 'tts' in cache.data:
             cache.data['tts'] = {}
             cache.data['tts']['enabled'] = False
@@ -86,7 +86,7 @@ handler = getch.Getch()
 help = '''ctrl+x для выбора чата
 ctrl+s для набора сообщения
 ctrl+n для открытия диалога
-ctrl+m для включения или выключения озвучки новых сообщений
+ctrl+k для включения или выключения озвучки новых сообщений
 ctrl+z для создания чата
 ctrl+j для вступления в группу
 ctrl+h для вывода справки

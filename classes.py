@@ -1,5 +1,7 @@
 
-import subprocess
+import queue
+import asyncio
+from msspeech import MSSpeech
 import os
 import os.path
 import sys
@@ -16,18 +18,36 @@ import playsound
 def print(obj):
     sys.stdout.write(str(obj)+'\n\r')
 
-def _play_mss(text, voice):
-    filename = str(time.time())+".mp3"
-    process = subprocess.Popen(
-        ["msspeech", voice, text, "--filename", filename],
-        stderr=subprocess.PIPE, stdout=subprocess.PIPE
-    )
-    process.communicate()
-    if os.path.isfile(filename):
-        playsound.playsound(filename)
-        os.remove(filename)
+async def a_mss_synthesize(voice_name, text, filename):
+    mss = MSSpeech()
+    v = await mss.get_voices_by_substring(voice_name)
+    if len(v) == 0:
+        raise ValueError("The voice was not found.")
+    await mss.set_voice(v[0]['Name'])
+    await mss.synthesize(text.strip(), filename)
+
+def mss_synthesize(*args, **kwargs):
+    return asyncio.run(a_mss_synthesize(*args, **kwargs))
+
+q = queue.Queue()
+def _play_mss_worker():
+    while True:
+        if q.empty():
+            continue
+        text, voice = q.get()
+        filename = str(time.time())+".mp3"
+        mss_synthesize(
+            voice, text, filename
+        )
+        if os.path.isfile(filename):
+            playsound.playsound(filename)
+            os.remove(filename)
+
+Thread(target=_play_mss_worker).start()
+
 def play_mss(text, voice):
-    Thread(target=_play_mss,args=(text, voice)).start()
+    q.put((text, voice))
+
 def notif():
     Thread(target=playsound.playsound,args=('not.mp3', True)).start()
 class COLOR():
@@ -43,7 +63,7 @@ class ctrl():
     d = "\x04"
     s = "\x13"
     n = "\x0e"
-    m = "\r"
+    k = "\x0b"
     z = "\x1a"
     h = "\x08"
     j = "\n"
@@ -128,7 +148,7 @@ class Session():
                 print('Невалидно!')
         return chat
 
-    def printmsg(self,message):
+    def printmsg(self,message, is_new=False):
         username = self.userget(message['from_id'])['name']
         text = str(message['text']).replace('\n','\n\r')
         if self.write_msg:
@@ -137,7 +157,7 @@ class Session():
                 print(f"{COLOR.BLUE}{text}{COLOR.ENDC}")
             else: 
                 print(f"{COLOR.GREEN}{username}{COLOR.ENDC}: {text}")
-                if self.cache.data['tts']['enabled']:
+                if is_new and self.cache.data['tts']['enabled']:
                     play_mss(text=f"{username}: {text}", voice=self.cache.data['tts']['voice'])
             sys.stdout.write("\r> "+self.ps.default_buffer.text)
         else:
@@ -145,7 +165,7 @@ class Session():
                 print(f"{COLOR.BLUE}{text}{COLOR.ENDC}\n\033[F")
             else: 
                 print(f"{COLOR.GREEN}{username}{COLOR.ENDC}: {text}\n\033[F")
-                if self.cache.data['tts']['enabled']:
+                if is_new and self.cache.data['tts']['enabled']:
                     play_mss(text=f"{username}: {text}", voice=self.cache.data['tts']['voice'])
 
 
@@ -172,7 +192,7 @@ class Session():
     def printupdate(self,upd):
         type = upd["type"]
         if type == 1:
-            self.printmsg(upd['object'])
+            self.printmsg(upd['object'], is_new=True)
             notif()
         elif type == 2:
             self.printmsg(upd['object'])
