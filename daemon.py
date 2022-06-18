@@ -27,7 +27,7 @@ def push(title, message):
 
 def send_api(text):
     requests.post('http://localhost:7239/addmsg', {'text':text})
-
+    print(f'send {text}')
 def check():
     try:
         res = requests.get('http://localhost:7239', timeout=1)
@@ -64,7 +64,6 @@ def main():
                 print(event)
         except Exception as e:
             print(e)
-            print(e.with_traceback())
 
 print(check())
 main()

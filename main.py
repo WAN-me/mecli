@@ -8,6 +8,7 @@ from classes import stdin, method
 from threading import Thread
 import getch
 import contextlib
+from classes import print
 
 if os.name != 'posix':
     import colorama
@@ -161,7 +162,6 @@ def main():
 
 @server.sbind('/addmsg')
 def addmsg(req):
-    print(req.data['text'])
     if session.write_msg:
         sys.stdout.write(f"\r{' '*(len(session.ps.default_buffer.text)+2)}\r") # Переставить коретку на строку выше, очистить строку
         print(req.data['text'])
@@ -170,7 +170,7 @@ def addmsg(req):
         print(req.data['text'])
         
     return 200, ''
-th = Thread(target=server.start, daemon=True)
+th = Thread(target=server.start, daemon=False)
 with open('/dev/null', 'w') as f:
     with contextlib.redirect_stdout(f):
         th.start()

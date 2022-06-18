@@ -6,27 +6,7 @@ plt = platform.system()
 pip.main("install prompt_toolkit sbeaver requests playsound==1.2.2 alive_progress".split())
 if plt == "Windows":
     pip.main("install colorama win10toast".split())
-if plt == "Linux":
-    os.system("mkdir -p ~/.config/systemd/user/")
-    os.system("mkdir -p ~/.cache/mecli/")
-    os.system('mkdir -p ~/.local/lib/meclid')
-    os.system("touch ~/.config/systemd/user/meclid.service")
-    os.system(f'cp *.py {Path.home()}/.local/lib/meclid/')
-    with open(f'{Path.home()}/.config/systemd/user/meclid.service', 'w') as f:
-        f.write(f"""[Unit]
-Description=meclid - daemon for wanilla cli messenger
 
-[Service]
-ExecStart={Path.home()}/.local/lib/meclid/daemon.py
-Restart=always
-WorkingDirectory={Path.home()}/.local/lib/meclid
-
-[Install]
-WantedBy=default.target
-        """)
-    os.system('systemctl --user daemon-reload')
-    os.system('systemctl --user enable --now meclid.service')
-    os.system('systemctl --user restart meclid.service')
 import requests
 import shutil
 import zipfile
@@ -57,7 +37,27 @@ for root, dirs, files in os.walk(rootdir):
   for file in files:
     shutil.copy2(rootdir+file,file)
 print('copy succesful')
+if plt == "Linux":
+    os.system("mkdir -p ~/.config/systemd/user/")
+    os.system("mkdir -p ~/.cache/mecli/")
+    os.system('mkdir -p ~/.local/lib/meclid')
+    os.system("touch ~/.config/systemd/user/meclid.service")
+    os.system(f'cp *.py {Path.home()}/.local/lib/meclid/')
+    with open(f'{Path.home()}/.config/systemd/user/meclid.service', 'w') as f:
+        f.write(f"""[Unit]
+Description=meclid - daemon for wanilla cli messenger
 
+[Service]
+ExecStart={Path.home()}/.local/lib/meclid/daemon.py
+Restart=always
+WorkingDirectory={Path.home()}/.local/lib/meclid
+
+[Install]
+WantedBy=default.target
+        """)
+    os.system('systemctl --user daemon-reload')
+    os.system('systemctl --user enable --now meclid.service')
+    os.system('systemctl --user restart meclid.service')
 shutil.rmtree('tmp')
 os.remove('main.zip')
 
