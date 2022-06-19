@@ -11,8 +11,8 @@ import prompt_toolkit
 import playsound
 import os
 
-def print(obj):
-    sys.stdout.write(str(obj)+'\n\r')
+def print(obj, end = '\n\r'):
+    sys.stdout.write(str(obj)+end)
 
 def notif():
     Thread(target=playsound.playsound,args=('not.mp3', True)).start()
