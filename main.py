@@ -20,7 +20,12 @@ server = sbeaver.Server(address='localhost', port=7239, sync=False, silence=True
 
 os.system("")  # костыль чтоб работали цвета
 
-cache = Db(f"{Path.home()}/.cache/mecli/cache.json")
+try: os.mkdir(f"{Path.home()}{os.sep}.cache")
+except FileExistsError: pass
+try: os.mkdir(f"{Path.home()}{os.sep}.cache{os.sep}mecli")
+except FileExistsError: pass
+
+cache = Db(f"{Path.home()}{os.sep}.cache{os.sep}mecli{os.sep}cache.json")
 
 def Handler():
     key = handler()
@@ -171,7 +176,7 @@ def addmsg(req):
         
     return 200, ''
 th = Thread(target=server.start, daemon=False)
-with open('/dev/null', 'w') as f:
+with open('nul' if os.name=="nt" else '/dev/null', 'w') as f:
     with contextlib.redirect_stdout(f):
         th.start()
 
