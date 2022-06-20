@@ -3,7 +3,7 @@ import platform
 import pip
 from pathlib import Path
 plt = platform.system()
-pip.main("install prompt_toolkit sbeaver requests playsound==1.2.2 alive_progress msspeech".split())
+pip.main("install prompt_toolkit sbeaver brotli requests playsound==1.2.2 alive_progress msspeech".split())
 if plt == "Windows":
     pip.main("install colorama win10toast".split())
 
